@@ -1,70 +1,65 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Xml.Linq;
-using Microsoft.VisualBasic.FileIO;
-using Practica2_2;
 
-namespace Practica2_2;
+namespace Practica2_2 {
+    internal class Program {
+        static string rutaCSV = "";
+        static string rutaXML = "";
 
-class Program {
-    static string rutaCSV = "";
-    static string rutaXML = "";
+        static void Main() {
+            int opcion;
 
-    static void Main() {
-        int opcion;
+            do {
+                Console.WriteLine("\n===== CONVERSOR CSV / XML =====");
+                Console.WriteLine("1. Configurar ruta del CSV");
+                Console.WriteLine("2. Configurar ruta del XML");
+                Console.WriteLine("3. Convertir CSV a XML");
+                Console.WriteLine("4. Convertir XML a CSV");
+                Console.WriteLine("0. Salir");
+                Console.Write("Opción: ");
 
-        do {
-            Console.WriteLine("\n===== CONVERSOR CSV - XML =====");
-            Console.WriteLine("1. Elegir archivo CSV");
-            Console.WriteLine("2. Elegir archivo XML de destino");
-            Console.WriteLine("3. Exportar CSV a XML");
-            Console.WriteLine("4. Exportar XML a CSV");
-            Console.WriteLine("0. Salir");
-            Console.Write("Opción: ");
+                if (!int.TryParse(Console.ReadLine(), out opcion)) {
+                    opcion = -1;
+                }
 
-            if (!int.TryParse(Console.ReadLine(), out opcion)) {
-                opcion = -1;
-            }
+                switch (opcion) {
+                    case 1:
+                        Functions.ConfigurarArchivo("CSV");
+                        rutaCSV = Functions.RutaCsvOrigen;
+                        break;
 
-            switch (opcion) {
-                case 1:
-                    Console.Write("Introduce la ruta del CSV: ");
-                    rutaCSV = Console.ReadLine() ?? "";
+                    case 2:
+                        Functions.ConfigurarArchivo("XML");
+                        rutaXML = Functions.RutaXmlDestino;
+                        break;
 
-                    if (File.Exists(rutaCSV)) {
-                        Console.WriteLine("Archivo CSV seleccionado.");
-                    } else {
-                        Console.WriteLine("El archivo no existe.");
-                        rutaCSV = "";
-                    }
+                    case 3:
+                        // Si se configuró vía opción 1/2, asegurar que las propiedades estén actualizadas
+                        if (!string.IsNullOrWhiteSpace(rutaCSV))
+                            Functions.RutaCsvOrigen = rutaCSV;
+                        if (!string.IsNullOrWhiteSpace(rutaXML))
+                            Functions.RutaXmlDestino = rutaXML;
+                        Functions.ConvertirCSVaXML();
+                        break;
 
-                    break;
+                    case 4:
+                        if (!string.IsNullOrWhiteSpace(rutaXML))
+                            Functions.RutaXmlOrigen = rutaXML;
+                        if (!string.IsNullOrWhiteSpace(rutaCSV))
+                            Functions.RutaCsvDestino = rutaCSV;
+                        Functions.ConvertirXMLaCSV();
+                        break;
 
-                case 2:
-                    Console.Write("Introduce la ruta del XML de destino: ");
-                    rutaXML = Console.ReadLine() ?? "";
-                    Console.WriteLine("Ruta XML configurada.");
-                    break;
+                    case 0:
+                        Console.WriteLine("Programa finalizado.");
+                        break;
 
-                case 3:
-                    Functions.MenuCSVaXML();
-                    break;
+                    default:
+                        Console.WriteLine("Opción no válida.");
+                        break;
+                }
 
-                case 4:
-                    Functions.MenuXMLaCSV();
-                    break;
-
-                case 0:
-                    Console.WriteLine("Programa finalizado.");
-                    break;
-
-                default:
-                    Console.WriteLine("Opción no válida.");
-                    break;
-            }
-        } while (opcion != 0);
+            } while (opcion != 0);
+        }
     }
 }

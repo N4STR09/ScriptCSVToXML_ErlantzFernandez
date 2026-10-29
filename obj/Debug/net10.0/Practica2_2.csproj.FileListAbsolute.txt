@@ -1,0 +1,15 @@
+C:\AccesoDatos\Practica2_2\bin\Debug\net10.0\Practica2_2.exe
+C:\AccesoDatos\Practica2_2\bin\Debug\net10.0\Practica2_2.deps.json
+C:\AccesoDatos\Practica2_2\bin\Debug\net10.0\Practica2_2.runtimeconfig.json
+C:\AccesoDatos\Practica2_2\bin\Debug\net10.0\Practica2_2.dll
+C:\AccesoDatos\Practica2_2\bin\Debug\net10.0\Practica2_2.pdb
+C:\AccesoDatos\Practica2_2\obj\Debug\net10.0\Practica2_2.GeneratedMSBuildEditorConfig.editorconfig
+C:\AccesoDatos\Practica2_2\obj\Debug\net10.0\Practica2_2.AssemblyInfoInputs.cache
+C:\AccesoDatos\Practica2_2\obj\Debug\net10.0\Practica2_2.AssemblyInfo.cs
+C:\AccesoDatos\Practica2_2\obj\Debug\net10.0\Practica2_2.csproj.CoreCompileInputs.cache
+C:\AccesoDatos\Practica2_2\obj\Debug\net10.0\Practica2_2.sourcelink.json
+C:\AccesoDatos\Practica2_2\obj\Debug\net10.0\Practica2_2.dll
+C:\AccesoDatos\Practica2_2\obj\Debug\net10.0\refint\Practica2_2.dll
+C:\AccesoDatos\Practica2_2\obj\Debug\net10.0\Practica2_2.pdb
+C:\AccesoDatos\Practica2_2\obj\Debug\net10.0\Practica2_2.genruntimeconfig.cache
+C:\AccesoDatos\Practica2_2\obj\Debug\net10.0\ref\Practica2_2.dll
