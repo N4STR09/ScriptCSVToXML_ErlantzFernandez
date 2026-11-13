@@ -7,7 +7,7 @@ using System.Text;
 using System.Xml.Linq;
 using Microsoft.VisualBasic.FileIO;
 
-namespace Practica2_2
+namespace Practica2_3
 {
     public static class Functions
     {
@@ -16,6 +16,62 @@ namespace Practica2_2
         public static string RutaXmlOrigen { get; set; } = "";
         public static string RutaCsvDestino { get; set; } = "";
 
+        // El exe queda en <proyecto>\bin\...\net10.0: subo 3 niveles hasta el proyecto.
+        private static readonly string RutaLog = Path.GetFullPath(
+            Path.Combine(
+                AppContext.BaseDirectory,
+                "..",
+                "..",
+                "..",
+                "log",
+                "Practica2_3.log"));
+
+        private static string TipoExportacion = "";
+        private static string ValorFiltro = "";
+
+        private static void Log(string mensaje)
+        {
+            Console.WriteLine(mensaje);
+            EscribirEnFichero(RutaLog, mensaje);
+        }
+
+        // Log aparte por tipo de exportación: todas, genero, anio o idioma.
+        private static void LogTipo(string mensaje)
+        {
+            if (string.IsNullOrEmpty(TipoExportacion))
+                return;
+
+            string carpeta = Path.GetDirectoryName(RutaLog) ?? "";
+            string ruta = Path.Combine(
+                carpeta,
+                $"exportacion_{TipoExportacion}.log");
+
+            EscribirEnFichero(ruta, mensaje);
+        }
+
+        private static void EscribirEnFichero(string ruta, string mensaje)
+        {
+            try
+            {
+                string? carpeta = Path.GetDirectoryName(ruta);
+
+                if (!string.IsNullOrEmpty(carpeta) &&
+                    !Directory.Exists(carpeta))
+                {
+                    Directory.CreateDirectory(carpeta);
+                }
+
+                File.AppendAllText(
+                    ruta,
+                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {mensaje}" +
+                    Environment.NewLine);
+            }
+            catch
+            {
+                // Un fallo al escribir el log no debe parar la exportación.
+            }
+        }
+
         public static void MenuCSVaXML()
         {
             if (!ArchivoValido(RutaCsvOrigen, "CSV de origen") ||
@@ -23,6 +79,13 @@ namespace Practica2_2
             {
                 return;
             }
+
+            Log("[INICIO] Exportación CSV -> XML");
+            Log($"[INICIO] Origen: {Path.GetFullPath(RutaCsvOrigen)}");
+            Log($"[INICIO] Destino: {Path.GetFullPath(RutaXmlDestino)}");
+
+            TipoExportacion = "";
+            ValorFiltro = "";
 
             try
             {
@@ -46,18 +109,23 @@ namespace Practica2_2
                 switch (opcion)
                 {
                     case 1:
+                        TipoExportacion = "todas";
+                        ValorFiltro = "sin filtro";
                         resultado = peliculas;
                         break;
 
                     case 2:
+                        TipoExportacion = "genero";
                         resultado = FiltrarPorGenero(peliculas);
                         break;
 
                     case 3:
+                        TipoExportacion = "anio";
                         resultado = FiltrarPorAnio(peliculas);
                         break;
 
                     case 4:
+                        TipoExportacion = "idioma";
                         resultado = FiltrarPorIdioma(peliculas);
                         break;
 
@@ -71,11 +139,30 @@ namespace Practica2_2
 
                 GuardarXML(resultado, RutaXmlDestino);
 
+                Log(
+                    $"[FIN] Exportación finalizada. Fichero generado: {Path.GetFullPath(RutaXmlDestino)} | Elementos exportados: {resultado.Count}");
+
+                LogTipo(
+                    $"[EXPORT {TipoExportacion}] CSV -> XML | " +
+                    $"Origen: {Path.GetFullPath(RutaCsvOrigen)} | " +
+                    $"Destino: {Path.GetFullPath(RutaXmlDestino)} | " +
+                    $"Filtro: {ValorFiltro} | " +
+                    $"Elementos exportados: {resultado.Count}");
+
                 Console.WriteLine(
                     $"Exportación terminada. Películas exportadas: {resultado.Count}");
             }
             catch (Exception ex)
             {
+                Log($"[FIN] Exportación terminada con error: {ex.Message}");
+
+                LogTipo(
+                    $"[EXPORT {TipoExportacion}] CSV -> XML | " +
+                    $"Origen: {Path.GetFullPath(RutaCsvOrigen)} | " +
+                    $"Destino: {Path.GetFullPath(RutaXmlDestino)} | " +
+                    $"Filtro: {ValorFiltro} | " +
+                    $"ERROR: {ex.Message}");
+
                 Console.WriteLine(
                     "No se pudo convertir el CSV a XML: " + ex.Message);
             }
@@ -88,6 +175,13 @@ namespace Practica2_2
             {
                 return;
             }
+
+            Log("[INICIO] Exportación XML -> CSV");
+            Log($"[INICIO] Origen: {Path.GetFullPath(RutaXmlOrigen)}");
+            Log($"[INICIO] Destino: {Path.GetFullPath(RutaCsvDestino)}");
+
+            TipoExportacion = "";
+            ValorFiltro = "";
 
             try
             {
@@ -111,18 +205,23 @@ namespace Practica2_2
                 switch (opcion)
                 {
                     case 1:
+                        TipoExportacion = "todas";
+                        ValorFiltro = "sin filtro";
                         resultado = peliculas;
                         break;
 
                     case 2:
+                        TipoExportacion = "genero";
                         resultado = FiltrarPorGenero(peliculas);
                         break;
 
                     case 3:
+                        TipoExportacion = "anio";
                         resultado = FiltrarPorAnio(peliculas);
                         break;
 
                     case 4:
+                        TipoExportacion = "idioma";
                         resultado = FiltrarPorIdioma(peliculas);
                         break;
 
@@ -136,11 +235,30 @@ namespace Practica2_2
 
                 GuardarCSV(resultado, RutaCsvDestino);
 
+                Log(
+                    $"[FIN] Exportación finalizada. Fichero generado: {Path.GetFullPath(RutaCsvDestino)} | Elementos exportados: {resultado.Count}");
+
+                LogTipo(
+                    $"[EXPORT {TipoExportacion}] XML -> CSV | " +
+                    $"Origen: {Path.GetFullPath(RutaXmlOrigen)} | " +
+                    $"Destino: {Path.GetFullPath(RutaCsvDestino)} | " +
+                    $"Filtro: {ValorFiltro} | " +
+                    $"Elementos exportados: {resultado.Count}");
+
                 Console.WriteLine(
                     $"Exportación terminada. Películas exportadas: {resultado.Count}");
             }
             catch (Exception ex)
             {
+                Log($"[FIN] Exportación terminada con error: {ex.Message}");
+
+                LogTipo(
+                    $"[EXPORT {TipoExportacion}] XML -> CSV | " +
+                    $"Origen: {Path.GetFullPath(RutaXmlOrigen)} | " +
+                    $"Destino: {Path.GetFullPath(RutaCsvDestino)} | " +
+                    $"Filtro: {ValorFiltro} | " +
+                    $"ERROR: {ex.Message}");
+
                 Console.WriteLine(
                     "No se pudo convertir el XML a CSV: " + ex.Message);
             }
@@ -202,13 +320,18 @@ namespace Practica2_2
                     if (campos.Length <= maxIndice)
                         continue;
 
-                    peliculas.Add(new Pelicula(
+                    Pelicula pelicula = new Pelicula(
                         campos[title],
                         campos[genre],
                         campos[premiere],
                         campos[runtime],
                         campos[score],
-                        campos[language]));
+                        campos[language]);
+
+                    peliculas.Add(pelicula);
+
+                    Log(
+                        $"[ELEMENTO {peliculas.Count}] Title: {pelicula.Title} | Genre: {pelicula.Genre} | Premiere: {pelicula.Premiere} | Runtime: {pelicula.Runtime} | IMDBScore: {pelicula.IMDBScore} | Language: {pelicula.Language}");
                 }
             }
 
@@ -251,15 +374,25 @@ namespace Practica2_2
                     "El XML debe tener el elemento raíz <Peliculas>.");
             }
 
-            return documento.Root.Elements("Pelicula")
-                .Select(p => new Pelicula(
-                    (string?)p.Element("Title") ?? "",
-                    (string?)p.Element("Genre") ?? "",
-                    (string?)p.Element("Premiere") ?? "",
-                    (string?)p.Element("Runtime") ?? "",
-                    (string?)p.Element("IMDBScore") ?? "",
-                    (string?)p.Element("Language") ?? ""))
-                .ToList();
+            List<Pelicula> peliculas = new List<Pelicula>();
+
+            foreach (XElement elemento in documento.Root.Elements("Pelicula"))
+            {
+                Pelicula pelicula = new Pelicula(
+                    (string?)elemento.Element("Title") ?? "",
+                    (string?)elemento.Element("Genre") ?? "",
+                    (string?)elemento.Element("Premiere") ?? "",
+                    (string?)elemento.Element("Runtime") ?? "",
+                    (string?)elemento.Element("IMDBScore") ?? "",
+                    (string?)elemento.Element("Language") ?? "");
+
+                peliculas.Add(pelicula);
+
+                Log(
+                    $"[ELEMENTO {peliculas.Count}] Title: {pelicula.Title} | Genre: {pelicula.Genre} | Premiere: {pelicula.Premiere} | Runtime: {pelicula.Runtime} | IMDBScore: {pelicula.IMDBScore} | Language: {pelicula.Language}");
+            }
+
+            return peliculas;
         }
 
         private static void GuardarCSV(
@@ -312,6 +445,8 @@ namespace Practica2_2
             if (genero == null)
                 return null;
 
+            ValorFiltro = genero;
+
             return peliculas
                 .Where(p => p.Genre.Split(
                     new[] { ",", ";" },
@@ -337,6 +472,8 @@ namespace Practica2_2
             if (idioma == null)
                 return null;
 
+            ValorFiltro = idioma;
+
             return peliculas
                 .Where(p => p.Language.Trim().Equals(
                     idioma,
@@ -354,6 +491,8 @@ namespace Practica2_2
                 Console.WriteLine("Año no válido.");
                 return null;
             }
+
+            ValorFiltro = "año>=" + anio;
 
             return peliculas
                 .Where(p => ObtenerAnio(p.Premiere) >= anio)

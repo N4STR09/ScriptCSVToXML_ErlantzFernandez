@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Practica2_2 {
+namespace Practica2_3 {
     internal class Program {
         static string rutaCSV = "";
         static string rutaXML = "";

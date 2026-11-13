@@ -1,4 +1,4 @@
-namespace Practica2_2
+namespace Practica2_3
 {
     public class Pelicula
     {
